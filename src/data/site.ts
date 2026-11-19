@@ -42,10 +42,14 @@ export interface Work {
   coverSize: Size;
   /**
    * 成片在 素材/ 下的相对路径，例如 "影视/信息流案例.mp4"。
-   * 成片体积大（合计约 210MB），刻意不放进 public/，见 reelSrc 的说明。
-   * 留空时预览层用封面做缓慢运动的静帧代替，不会黑屏。
+   * 本地预览走 /@fs/ 直读；生产环境用 bilibili 字段。
    */
   reel?: string;
+  /**
+   * B 站视频 BV 号，例如 "BV1xx411c7mD"。
+   * 生产环境预览用这个嵌 B 站播放器；留空则显示封面静帧。
+   */
+  bilibili?: string;
   /** 成片分辨率与时长（实测） */
   reelSize?: Size;
   seconds?: number;
@@ -62,16 +66,22 @@ export interface Work {
 export const MATERIALS_ROOT = "P:/Documents/Qwer/素材";
 
 /**
- * 成片路径 → 浏览器可播的 URL。
+ * 成片 → 浏览器可播的 URL。
  *
  * 本地预览走 Vite 开发服务器的 /@fs/ 直读 素材/ 目录（支持 Range，可拖动进度）。
- * 生产包里刻意不引用这些文件：210MB 原片既拖慢构建，也可能被原样公开。
- * 要上线真视频，先压码（建议 720p / H.264 / CRF 30 左右）再走托管或外链，
- * 然后把下面的 DEV 判断换成公开地址。
+ * 生产环境用 B 站嵌入（work.bilibili 填 BV 号）；没填则返回空，预览层退回封面静帧。
  */
 export function reelSrc(work: Work): string {
+  if (work.bilibili) {
+    return `//player.bilibili.com/player.html?bvid=${work.bilibili}&high_quality=1&danmaku=0`;
+  }
   if (!work.reel || !import.meta.env.DEV) return "";
   return `/@fs/${MATERIALS_ROOT}/${encodeURI(work.reel)}`;
+}
+
+/** 判断是否为 B 站嵌入源 */
+export function isBilibili(work: Work): boolean {
+  return !!work.bilibili;
 }
 
 /** 竖版图 / 竖屏视频：不裁切，完整显示 */

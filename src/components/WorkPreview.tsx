@@ -7,7 +7,7 @@ import {
 } from "react";
 import Overlay from "./Overlay";
 import { IconChevronRight, IconPause, IconPlay, IconVolume, IconVolumeMute, IconFullscreen, IconFullscreenExit } from "./Icons";
-import { categories, isTall, reelSrc, works, type Work } from "../data/site";
+import { categories, isTall, isBilibili, reelSrc, works, type Work } from "../data/site";
 
 const catName = new Map(categories.map((c) => [c.id, c.name]));
 
@@ -186,6 +186,8 @@ export default function WorkPreview({ work, onClose, onNavigate }: Props) {
 
   /** 成片只在本地预览时从 素材/ 直读；打包后为空，预览层自动退回封面静帧 */
   const video = reelSrc(work);
+  /** B 站嵌入：生产环境用 iframe 播 B 站视频 */
+  const bilibiliSrc = isBilibili(work) ? video : "";
   /** 竖屏成片或竖版海报：不裁切，完整显示 */
   const tall = isTall(video ? work.reelSize : work.coverSize);
   /**
@@ -391,7 +393,15 @@ export default function WorkPreview({ work, onClose, onNavigate }: Props) {
 
   const hud = (
     <div className="pv__hud" ref={hudRef}>
-      {video ? (
+      {bilibiliSrc ? (
+        <>
+          <span className="pv__hudtime">B 站播放</span>
+          <span className="pv__bar pv__hudbar" style={{ ["--p" as string]: "100%" }}>
+            <i style={{ opacity: 0.35 }} />
+          </span>
+          <span className="pv__hudtime mono">{work.duration}</span>
+        </>
+      ) : video ? (
         <>
           <button className="icon-btn" onClick={toggle} aria-label={playing ? "暂停" : "播放"}>
             {playing ? <IconPause size={15} /> : <IconPlay size={15} />}
@@ -465,11 +475,13 @@ export default function WorkPreview({ work, onClose, onNavigate }: Props) {
           data-clickable={video ? "1" : undefined}
           data-hud={video ? (hudOn ? "on" : "off") : "on"}
           style={{ ["--poster" as string]: `url("${work.cover}")`, ["--ar" as string]: ar }}
-          onPointerMove={video ? onStageMove : undefined}
-          onPointerLeave={video ? onStageLeave : undefined}
+          onPointerMove={video && !bilibiliSrc ? onStageMove : undefined}
+          onPointerLeave={video && !bilibiliSrc ? onStageLeave : undefined}
           onTouchStart={isMobileFs ? onTouchStart : undefined}
           onTouchEnd={isMobileFs ? onTouchEnd : undefined}
           onPointerDown={(e) => {
+            // B 站 iframe 有自己的控件，不拦截点击
+            if (bilibiliSrc) return;
             // 画面本身也能点：自动播放被内嵌面板拦掉时，按一下就直接播，不用再去找播放键
             if (!video) return;
             if ((e.target as HTMLElement).closest(".pv__hud, .pv__bigplay")) return;
@@ -478,7 +490,16 @@ export default function WorkPreview({ work, onClose, onNavigate }: Props) {
             toggle();
           }}
         >
-          {video ? (
+          {bilibiliSrc ? (
+            <iframe
+              className="pv__bilibili"
+              src={bilibiliSrc}
+              scrolling="no"
+              frameBorder="no"
+              allowFullScreen
+              title={work.title}
+            />
+          ) : video ? (
             <video
               ref={videoRef}
               src={video}
@@ -517,7 +538,7 @@ export default function WorkPreview({ work, onClose, onNavigate }: Props) {
             <img className="pv__still" src={work.cover} alt={`${work.title} 画面`} decoding="async" />
           )}
 
-          {video && !playing && (
+          {!bilibiliSrc && video && !playing && (
             <button
               type="button"
               className="pv__bigplay"
@@ -527,7 +548,7 @@ export default function WorkPreview({ work, onClose, onNavigate }: Props) {
               <IconPlay size={22} />
             </button>
           )}
-          {video && playing && stalled && (
+          {!bilibiliSrc && video && playing && stalled && (
             <span className="pv__loading mono" role="status">
               画面加载中…
             </span>
