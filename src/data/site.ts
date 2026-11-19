@@ -181,6 +181,7 @@ export const categories: Category[] = [
 export const works: Work[] = [
   {
     id: "ad-nice",
+    bilibili: "BV17Zse6ZEmu",
     title: "《大胃王争霸赛》纳爱斯广告案例",
     category: "film",
     cover: "/work/ad-nice.jpg",
@@ -198,6 +199,7 @@ export const works: Work[] = [
   },
   {
     id: "feed",
+    bilibili: "BV17Zse6ZEqY",
     title: "信息流案例",
     category: "film",
     cover: "/work/feed.jpg",
@@ -215,6 +217,7 @@ export const works: Work[] = [
   },
   {
     id: "series",
+    bilibili: "BV17Zse6ZEad",
     title: "微短剧案例",
     category: "film",
     cover: "/work/series.jpg",
@@ -232,6 +235,7 @@ export const works: Work[] = [
   },
   {
     id: "fenwei",
+    bilibili: "BV17Zse6ZEYc",
     title: "《粉味人间》美食纪录片",
     category: "film",
     cover: "/work/fenwei.jpg",
@@ -249,6 +253,7 @@ export const works: Work[] = [
   },
   {
     id: "bingfu",
+    bilibili: "BV1wDse6eENW",
     title: "《全球兵符》",
     category: "ai",
     cover: "/work/bingfu.jpg",
@@ -266,6 +271,7 @@ export const works: Work[] = [
   },
   {
     id: "cat",
+    bilibili: "BV17Zse6ZEtQ",
     title: "《末日小猫》",
     category: "ai",
     cover: "/work/cat.jpg",
@@ -283,6 +289,7 @@ export const works: Work[] = [
   },
   {
     id: "renxia",
+    bilibili: "BV1qZse6ZEvc",
     title: "赛博任侠",
     category: "ai",
     cover: "/work/renxia.jpg",
@@ -300,6 +307,7 @@ export const works: Work[] = [
   },
   {
     id: "ae",
+    bilibili: "BV17Zse6ZE2X",
     title: "AE 动画 K 帧案例",
     category: "3d",
     cover: "/work/ae.jpg",
@@ -317,6 +325,7 @@ export const works: Work[] = [
   },
   {
     id: "vfx",
+    bilibili: "BV17Zse6ZEYf",
     title: "VFX 特效案例",
     category: "3d",
     cover: "/work/vfx.jpg",
@@ -334,6 +343,7 @@ export const works: Work[] = [
   },
   {
     id: "deep",
+    bilibili: "BV17Zse6ZEb7",
     title: "《头文字deep》",
     category: "3d",
     cover: "/work/deep.jpg",
